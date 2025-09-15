@@ -1,0 +1,992 @@
+\documentclass{article}
+\usepackage[left=0.8in, right=0.8in, top=0.7in, bottom=0.7in]{geometry} % Réduction des marges
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{listings}
+\newtheorem{theorem}{Theorem}[section] % Numérotation par section
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{physics}
+\usepackage{calligra}
+\usepackage{xcolor}
+\usepackage{sectsty}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\subsubsectionfont{\centering}
+
+
+\lstdefinelanguage{Matlab}{
+  morekeywords={break,case,catch,continue,elseif,else,end,for,function,
+    global,if,otherwise,persistent,return,switch,try,while,zeros,ones,
+    length,classdef,properties,methods},
+  sensitive=true,
+  morecomment=[l]\%,
+  morestring=[m]',
+}[keywords,comments,strings]
+
+\lstset{
+  language=Matlab,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  stringstyle=\color{orange},
+  commentstyle=\color{green!50!black},
+  numbers=left,
+  numberstyle=\tiny,
+  stepnumber=1,
+  numbersep=5pt,
+  backgroundcolor=\color{gray!10},
+  showspaces=false,
+  showstringspaces=false,
+  frame=single,
+  tabsize=2,
+  breaklines=true,
+  captionpos=b
+}
+
+\lstset{literate=
+  {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+  {É}{{\'E}}1 {È}{{\`E}}1 {Ê}{{\^E}}1 {Ë}{{\"E}}1
+  {à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1
+  {î}{{\^i}}1 {ï}{{\"i}}1
+  {ô}{{\^o}}1 {ö}{{\"o}}1
+  {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1
+  {ç}{{\c{c}}}1
+  {’}{{'}}1  % apostrophe typographique remplacée par simple '
+}
+
+
+\title{Internship}
+\author{Taylan Alpgündüz}
+\date{September - January 2025}
+
+\begin{document}
+
+\maketitle
+
+\vspace{2cm}
+
+\section{Collaboration}
+
+\vspace{1cm}
+
+\subsection{GIThub}
+
+\vspace{1cm}
+
+
+\vspace{2cm}
+
+\subsection{Jupyter notebooks}
+
+\vspace{1cm}
+
+
+\vspace{2cm}
+
+\section{Mathematical introduction}
+
+\vspace{1cm}
+
+\subsection{The Singular Value Decomposition}
+
+\vspace{1cm}
+
+\begin{theorem}
+Let $A \in \mathbb{C}^{n,m}$ with $n \ge m$ be given.  
+Then there exist unitary matrices  
+$V \in \mathbb{C}^{n,n}$ and $W \in \mathbb{C}^{m,m}$ such that  
+\[
+A = V \Sigma W^H
+\]
+with
+\[
+\Sigma =
+\begin{bmatrix}
+\Sigma_r & 0_{r,\,m-r} \\
+0_{n-r,\,r} & 0_{n-r,\,m-r}
+\end{bmatrix}
+\in \mathbb{R}^{n,m},
+\quad
+\Sigma_r = \mathrm{diag}(\sigma_1, \dots, \sigma_r),
+\]
+where
+\[
+\sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_r > 0
+\quad\text{and}\quad
+r = \mathrm{rank}(A).
+\]
+\end{theorem}
+
+\vspace{1cm}
+
+\begin{definition}
+A decomposition of the form \((19.1)\) is called a \emph{singular value decomposition}  
+(or short \emph{SVD}) of the matrix \(A\).  
+
+The diagonal entries of the matrix \(\Sigma_r\) are called \emph{singular values},  
+and the columns of \(V\) (resp. \(W\)) are called the \emph{left} (resp. \emph{right})  
+singular vectors of \(A\).
+
+From \((19.1)\) we obtain the unitary diagonalizations of the matrices \(A^H A\) and \(A A^H\):
+\[
+A^H A =
+W
+\begin{bmatrix}
+\Sigma_r^2 & 0 \\
+0 & 0
+\end{bmatrix}
+W^H,
+\quad
+A A^H =
+V
+\begin{bmatrix}
+\Sigma_r^2 & 0 \\
+0 & 0
+\end{bmatrix}
+V^H.
+\]
+
+The singular values of \(A\) are therefore uniquely determined as the positive square roots  
+of the positive eigenvalues of \(A^H A\) or \(A A^H\).  
+The unitary matrices \(V\) and \(W\) in the singular value decomposition, however, are  
+(not unlike eigenvectors in general) not uniquely determined.
+
+If we write the SVD of $A$ in the form (19.1),
+\[
+A = V \Sigma W^H
+= V
+\begin{bmatrix}
+I_m \\[2pt]
+0_{n-m,\,m}
+\end{bmatrix}
+W^H \;
+W
+\begin{bmatrix}
+\Sigma_r & 0 \\
+0 & 0_{m-r}
+\end{bmatrix}
+W^H
+=:\, U P,
+\]
+then $U \in \mathbb{C}^{n,m}$ has orthonormal columns, i.e., $U^H U = I_m$, and
+$P = P^H \in \mathbb{C}^{m,m}$ is positive semidefinite with inertia $(r,0,m-r)$,
+where $\Sigma_r = \mathrm{diag}(\sigma_1,\dots,\sigma_r)$ and $r=\mathrm{rank}(A)$.
+
+The factorization $A = U P$ is called a \emph{polar decomposition} of $A$.
+It can be viewed as a generalization of the polar representation of complex numbers,
+$z = e^{i\varphi}\lvert z\rvert$.
+
+\end{definition}
+
+\vspace{1cm}
+
+\begin{lemma}
+Suppose that the matrix $A \in \mathbb{C}^{n,m}$ with $\operatorname{rank}(A)=r$ has an SVD of the form (19.1) with $V = [v_1,\dots,v_n]$ and $W = [w_1,\dots,w_m]$.
+Considering $A$ as an element of $\mathcal{L}(\mathbb{C}^{m,1}, \mathbb{C}^{n,1})$, we then have
+\[
+\operatorname{im}(A) = \operatorname{span}\{v_1,\dots,v_r\}
+\quad\text{and}\quad
+\ker(A) = \operatorname{span}\{w_{r+1},\dots,w_m\}.
+\]
+\end{lemma}
+
+\vspace{2cm}
+
+An SVD of the form (19.1) can be written as
+\[
+A = \sum_{j=1}^r \sigma_j\, v_j w_j^H.
+\]
+Thus, $A$ can be written as a sum of $r$ matrices of the form $\sigma_j v_j w_j^H$, where
+$\operatorname{rank}(\sigma_j v_j w_j^H)=1$. Let
+\[
+A_k := \sum_{j=1}^k \sigma_j\, v_j w_j^H, \qquad 1 \le k \le r.
+\tag{19.2}
+\]
+Then $\operatorname{rank}(A_k)=k$ and, using that the matrix $2$-norm is unitarily invariant (cf. Exercise 19.1), we get
+\[
+\|A - A_k\|_2
+= \left\| \operatorname{diag}(\sigma_{k+1},\dots,\sigma_r) \right\|_2
+= \sigma_{k+1}.
+\tag{19.3}
+\]
+Hence $A$ is approximated by the matrix $A_k$, where the rank of the approximating
+matrix and the approximation error in the matrix $2$-norm are explicitly known.
+Furthermore, the singular value decomposition yields the best possible approximation
+of $A$ by a matrix of rank $k$ with respect to the matrix $2$-norm:
+\[
+\min_{\operatorname{rank}(B)\le k} \|A - B\|_2 = \sigma_{k+1},
+\quad\text{attained by } B = A_k.
+\]
+
+\vspace{1cm}
+
+The SVD is one of the most important and practical mathematical tools in almost all areas ofscience, engineering and social sciences,in medicine and even in psychology. Its great importance is due to the fact that the SVD allows to distinguish between “important” and “non-important” information in a given data. In practice, the latter corresponds, e.g., to measurement errors, noise in the transmission of data, or fine details in a signal or an image that do not play an important role. Often, the “important” information corresponds to the large singular values, and the “non-important” information to the small ones.
+
+\vspace{1cm}
+
+Another important application of the SVD arises in the solution of linear systems
+of equations. If $A \in \mathbb{C}^{n,m}$ has an SVD of the form (19.1), we define the matrix
+\[
+A^{\dagger} := W \Sigma^{\dagger} V^H \in \mathbb{C}^{m,n},
+\]
+where
+\[
+\Sigma^{\dagger} := 
+\begin{bmatrix}
+\Sigma_r^{-1} & 0 \\
+0 & 0
+\end{bmatrix}
+\in \mathbb{R}^{m,n}.
+\]
+
+
+One easily sees that
+\[
+A^{\dagger} A = W 
+\begin{bmatrix}
+I_r & 0 \\
+0 & 0
+\end{bmatrix}
+W^H \in \mathbb{R}^{m,m}.
+\]
+
+If $r = m = n$, then $A$ is invertible and the right-hand side of the above equation is 
+equal to the identity matrix $I_n$. In this case we have 
+\[
+A^{\dagger} = A^{-1}.
+\]
+The matrix $A^{\dagger}$ can therefore be viewed as a generalized inverse, that in the case 
+of an invertible matrix $A$ is equal to the inverse of $A$.
+
+\vspace{1cm}
+
+\begin{definition}
+
+The matrix $A^{\dagger}$ in (19.4) is called the \emph{Moore--Penrose inverse} 
+or \emph{pseudoinverse} of $A$.  
+
+Let $A \in \mathbb{C}^{n,m}$ and $b \in \mathbb{C}^{n,1}$ be given. If the linear system 
+of equations
+\[
+Ax = b
+\]
+has no solution, then we can try to find an $\hat{x} \in \mathbb{C}^{m,1}$ such that 
+$Ax$ is “as close as possible” to $b$. Using the Moore--Penrose inverse we 
+obtain the best possible approximation with respect to the Euclidean norm.
+
+    
+\end{definition}
+
+\vspace{1cm}
+
+\begin{theorem}[Theorem 19.7]
+
+    Let $A \in \mathbb{C}^{n,m}$ with $n \geq m$ and $b \in \mathbb{C}^{n,1}$ be given.  
+If $A = V \Sigma W^H$ is an SVD, and $A^{\dagger}$ is as in (19.4), then 
+$\hat{x} = A^{\dagger} b$ satisfies
+\[
+\| b - A\hat{x} \|_2 \;\leq\; \| b - Ay \|_2 
+\quad \text{for all } y \in \mathbb{C}^{m,1},
+\]
+and
+\[
+\| \hat{x} \|_2
+= \left( \sum_{j=1}^r 
+\left| \frac{v_j^H b}{\sigma_j} \right|^2
+\right)^{\tfrac{1}{2}}
+\;\leq\; \| y \|_2
+\quad \text{for all } y \in \mathbb{C}^{m,1} 
+\text{ with } \| b - A\hat{x} \|_2 = \| b - Ay \|_2 .
+\]
+
+    
+\end{theorem}
+
+\vspace{3cm}
+
+The minimization problem for the vector $\hat{x}$ can be written as
+\[
+\| b - A\hat{x} \|_2^2 
+= \min_{y \in \mathbb{C}^{m,1}} \| b - Ay \|_2^2.
+\]
+
+If
+\[
+A =
+\begin{bmatrix}
+\tau_1 & 1 \\
+\vdots & \vdots \\
+\tau_m & 1
+\end{bmatrix}
+\in \mathbb{R}^{m,2},
+\]
+for pairwise distinct $\tau_1, \ldots, \tau_m \in \mathbb{R}$, then this minimization 
+problem corresponds to the problem of linear regression and the least-squares 
+approximation in Example 12.16, that we have solved with the QR-decomposition 
+of $A$.
+
+If $A = QR$ is this decomposition, then
+\[
+A^{\dagger} = (A^H A)^{-1} A^H 
+\quad \text{(cp.\ Exercise 19.5),}
+\]
+and we have
+\[
+A^{\dagger} = (R^H Q^H Q R)^{-1} R^H Q^H 
+= R^{-1} (R^H)^{-1} R^H Q^H 
+= R^{-1} Q^H.
+\]
+
+Thus, the solution of the least-squares approximation in Example 12.16 is identical 
+to the solution of the above minimization problem using the SVD of $A$.
+
+
+\newpage
+
+\subsection{Dynamic Mode Decomposition (DMD)}
+
+\vspace{1cm}
+
+The method relies simply on collecting snapshots of data $x_k$ from a dynamical system 
+at a number of times $t_k$, where $k = 1,2,3,\dots,m$. As we will show, DMD is 
+algorithmically a regression of data onto locally linear dynamics
+\[
+x_{k+1} = A x_k,
+\]
+where $A$ is chosen to minimize
+\[
+\| x_{k+1} - A x_k \|_2
+\]
+over the $k = 1,2,3,\dots,m-1$ snapshots.  
+
+The cost of the algorithm is a singular 
+value decomposition (SVD) of the snapshot matrix constructed from the data $x_k$.
+
+The DMD procedure constructs the proxy, approximate locally linear dynamical system
+\[
+\frac{d x}{dt} = \mathcal{A}x  ,
+\]
+with initial condition $x(0)$ and well-known solution 
+\[
+x(t) = \sum_{k=1}^n \phi_k \, e^{\omega_k t} \, b_k 
+= \Phi \, e^{\Omega t} \, b,
+\]
+where $\phi_k$ and $\omega_k$ are the eigenvectors and eigenvalues of the matrix $\mathcal{A}$, 
+and the coefficients $b_k$ are the coordinates of $x(0)$ in the eigenvector basis.  
+
+Given continuous dynamics, it is always possible to describe an analogous 
+discrete-time system sampled every $\Delta t$ in time:
+\[
+x_{k+1} = A x_k,
+\qquad \text{where } A = exp{(\mathcal{A} \Delta t)}.
+\]
+
+To minimize the approximation error across all snapshots from 
+$k = 1,2,\dots,m$, it is possible to arrange the $m$ snapshots into two large data matrices:
+\[
+X =
+\begin{bmatrix}
+x_1 & x_2 & \cdots & x_{m-1}
+\end{bmatrix},
+\]
+\[
+X' =
+\begin{bmatrix}
+x_2 & x_3 & \cdots & x_m
+\end{bmatrix}.
+\]
+
+The locally linear approximation may be written in terms of these data matrices as
+\[
+X' \approx A X.
+\]
+
+The best-fit $A$ matrix is given by
+\[
+A = X' X^{\dagger},
+\]
+where ${}^\dagger$ denotes the Moore--Penrose pseudoinverse. This solution minimizes the error
+\[
+\| X' - A X \|_F,
+\]
+where $\|\cdot\|_F$ denotes the Frobenius norm.
+
+\vspace{1cm}
+
+\subsubsection*{The DMD Algorithm}
+
+\vspace{1cm}
+
+1. First, take the singular value decomposition (SVD) of $X$ :
+\[
+X \approx U \Sigma V^*,
+\]
+where ${}^*$ denotes the conjugate transpose, 
+$U \in \mathbb{C}^{n \times r}$, 
+$\Sigma \in \mathbb{C}^{r \times r}$, 
+and $V \in \mathbb{C}^{m \times r}$.  
+Here $r$ is the rank of the reduced SVD approximation to $X$.  
+The left singular vectors $U$ are the POD modes.  
+The columns of $U$ are orthonormal, so $U^* U = I$; similarly, $V^* V = I$.
+
+---
+
+2. The matrix $A$ from may be obtained using the pseudoinverse of $X$ from the SVD:
+\[
+A = X' V \Sigma^{-1} U^*.
+\]
+In practice, it is computationally more efficient to compute $\tilde{A}$, the $r \times r$ 
+projection of the full matrix $A$ onto POD modes:
+\[
+\tilde{A} = U^* A U = U^* X' V \Sigma^{-1}.
+\]
+The matrix $\tilde{A}$ defines a low-dimensional linear model of the dynamical system 
+on POD coordinates:
+\[
+\tilde{x}_{k+1} = \tilde{A} \tilde{x}_k.
+\]
+It is possible to reconstruct the high-dimensional state via $x_k = U \tilde{x}_k$.
+
+---
+
+3. Compute the eigendecomposition of $\tilde{A}$:
+\[
+\tilde{A} W = W \Lambda,
+\]
+where the columns of $W$ are eigenvectors and $\Lambda$ is a diagonal matrix 
+containing the corresponding eigenvalues $\lambda_k$.
+
+---
+
+4. Finally, we may reconstruct the eigendecomposition of $A$ from $W$ and $\Lambda$.  
+In particular, the eigenvalues of $A$ are given by $\Lambda$, and the eigenvectors of $A$ 
+(the **DMD modes**) are given by the columns of $\Phi$:
+\[
+\Phi = X' V \Sigma^{-1} W.
+\]
+
+\vspace{1cm}
+
+\subsubsection*{The DMD Function in Matlab}
+
+
+
+\begin{lstlisting}[language=Matlab, caption={}]
+function [Phi, omega, lambda, b, Xdmd] = DMD(X1, X2, r, dt)
+% function [Phi ,omega ,lambda ,b,Xdmd ] = DMD (X1 ,X2 ,r,dt)
+% Computes the Dynamic Mode Decomposition of X1 , X2
+%
+% INPUTS :
+%   X1 = X, data matrix
+%   X2 = X’, shifted data matrix
+%   Columns of X1 and X2 are state snapshots
+%   r = target rank of SVD
+%   dt = time step advancing X1 to X2 (X to X’)
+%
+% OUTPUTS :
+%   Phi   : the DMD modes
+%   omega : the continuous-time DMD eigenvalues
+%   lambda: the discrete-time DMD eigenvalues
+%   b     : a vector of magnitudes of modes Phi
+%   Xdmd  : the data matrix reconstructed by Phi, omega, b
+%
+% DMD algorithm
+[U, S, V] = svd(X1, 'econ');
+r = min(r, size(U,2));
+U_r = U(:, 1:r);        % truncate to rank-r
+S_r = S(1:r, 1:r);
+V_r = V(:, 1:r);
+
+Atilde = U_r' * X2 * V_r / S_r;     % low-rank dynamics
+[W_r, D] = eig(Atilde);
+Phi = X2 * V_r / S_r * W_r;         % DMD modes
+
+lambda = diag(D);                   % discrete-time eigenvalues
+omega = log(lambda) / dt;           % continuous-time eigenvalues
+
+% Compute DMD mode amplitudes
+x1 = X1(:, 1);
+b = Phi \ x1;
+
+% DMD reconstruction
+mm1 = size(X1, 2);                  % mm1 = m - 1
+time_dynamics = zeros(r, mm1);
+t = (0:mm1-1) * dt;                 % time vector
+
+for iter = 1:mm1
+    time_dynamics(:, iter) = (b .* exp(omega * t(iter)));
+end
+
+Xdmd = Phi * time_dynamics;
+\end{lstlisting}
+
+\vspace{1cm}
+
+The DMD algorithm presented here takes advantage of low dimensionality in the data to make a low-rank approximation of the linear mapping that best approximates the nonlinear dynamics of the data collected for the system. Once this is done,a prediction of the future state of the system is achieved for all time.
+
+\vspace{1cm}
+
+\subsubsection*{The Limitations of the DMD method}
+
+\vspace{1cm}
+
+\begin{itemize}
+    \item Translational and rotational invariances
+
+\vspace{1cm}
+
+Example : In this case, one of the signals is translating at a constant velocity across 
+the spatial domain. The two signals of interest are
+\[
+f(x,t) = f_1(x,t) + f_2(x,t)
+= \operatorname{sech}(x+6-t)\, e^{i 2.3 t}
++ 2\,\operatorname{sech}(x)\,\tanh(x)\, e^{i 2.8 t}.
+\]
+
+The rank-2 reconstruction is no longer able to characterize the dynamics due to the translation. Indeed, it now takes nearly 10 modes to produce an accurate reconstruction. This artiﬁcial inﬂation of the dimension is a result of the inability of SVD to capture translational invariances and correlate across snapshots of time.
+
+\vspace{1cm}
+
+    \item Transient time behavior
+
+\vspace{1cm}
+
+To demonstrate the impact of the transient time dynamics, we once again consider 
+the simple example of two mixed spatiotemporal signals, with one turning on and off 
+during the time domain. In this case, the signals are
+\[
+f(x,t) = f_1(x,t) + f_2(x,t)
+= 0.5\,\operatorname{sech}(x+5)\, e^{i 2.3 t}\,
+\bigl[\tanh(t-\pi) - \tanh(t-3\pi)\bigr]
++ 2\,\operatorname{sech}(x)\,\tanh(x)\, e^{i 2.8 t}.
+\]
+
+
+Interestingly, regardless of the rank (r = 10 in the ﬁgure), DMD is incapable of correctly getting the right turn-on and turn-off behavior of the ﬁrst mode. The result shown is the same for any rank approximation above two. Unlike the translational or rotational invariance, which simply created an artiﬁcially high dimension in DMD, in this case DMD completely fails to characterize the correct dynamics
+
+\vspace{1cm}
+
+The discussion of multiresolution DMD (mrDMD) presents a strategy to handle those issues.
+
+\end{itemize}
+
+\vspace{1cm}
+
+\subsubsection*{Fluid Dynamics}
+
+\vspace{1cm}
+
+Since its introduction, DMD has become a widely used technique in fluid dynamics,
+with strong connections to Koopman theory and nonlinear dynamical systems.
+
+\begin{itemize}
+    \item DMD to extract structure from fluids data
+    
+DMD has been applied to diverse flow geometries (jets, cavity flows, wakes,
+boundary layers, etc.) to analyze mixing, acoustics, and combustion. 
+It has revealed coherent modes, oscillations, and instabilities in many flow settings.
+
+    \item Model reduction and system identification
+    
+DMD provides reduced-order models (ROMs) from simulations and experiments.
+It is related to balanced POD and the Eigensystem Realization Algorithm (ERA),
+and has been implemented in software such as MODRED.
+
+    \item Control-oriented methods
+    
+DMD-based approaches support control design. They connect with balanced
+truncation, BPOD, and ERA, enabling data-driven input-output models without
+adjoint simulations.
+
+    \item Innovations of DMD in fluid dynamics
+    
+Variants of DMD have been developed, including compressed sensing DMD,
+optimal mode decomposition, mode selection, and the use of images or spatial
+variables in place of time.
+
+    \item Relationship to the Perron--Frobenius operator
+    
+DMD is linked to the Koopman and Perron--Frobenius operators, enabling the
+identification of almost-invariant sets. These are useful for analyzing coherence,
+sensitivity, and uncertainty quantification in fluid systems.
+\end{itemize}
+
+\vspace{1cm}
+
+\subsubsection*{Multiresolution Dynamic Mode Decomposition}
+
+\vspace{1cm}
+
+\vspace{1cm}
+
+\subsubsection*{DMD with Control}
+
+\vspace{1cm}
+
+The goal of DMDc is to characterize the relationship between three measurements:
+the current measurement $x_k$, the future state $x_{k+1}$, and the current control
+$u_k$. The relationship can be approximated by the canonical discrete linear
+dynamical system
+\[
+    x_{k+1} \approx A x_k + B u_k.
+\]
+
+The goal is to find approximations of $A$ and $B$ from measurements. 
+The state snapshot measurement matrices $X$ and $X'$ are constructed in the same
+manner as for DMD. A new measurement snapshot matrix is constructed for the inputs
+\[
+    \Upsilon =
+    \begin{bmatrix}
+        \,| & | &  & |\, \\
+        u_1 & u_2 & \cdots & u_{m-1} \\
+        \,| & | &  & |\, 
+    \end{bmatrix}.
+\]
+The first equation can be rewritten in matrix form to include the new data matrices:
+\[
+    X' \approx A X + B \Upsilon.
+\]
+
+DMDc utilizes the three data matrices X, X' and $ \Upsilon $ to discover a best-fit approximation of operators A and B. The algorithm is different whether the matrix B is known (or well-estimated) or unknown.
+
+\vspace{1cm}
+
+\subsubsection*{The DMDc Algorithm}
+
+\vspace{1cm}
+
+\begin{enumerate}
+    \item \textbf{Collect and construct the snapshot matrices.}  
+    
+    Collect the system measurement and control snapshots and form the matrices 
+    $X$, $X'$, and $\Upsilon$. Stack the data matrices $X$ and $\Upsilon$ to 
+    construct the matrix $\Omega$.
+
+    \item \textbf{Compute the SVD of the input space $\Omega$.}  
+    
+    Compute the SVD of $\Omega$ to obtain the decomposition
+    \[
+        \Omega \approx \tilde{U} \tilde{\Sigma} \tilde{V}^*
+    \]
+    with truncation value $\tilde{r}$.
+
+    \item \textbf{Compute the SVD of the output space $X'$.}  
+    
+    Compute the SVD of $X'$ to obtain the decomposition
+    \[
+        X' \approx \hat{U} \hat{\Sigma} \hat{V}^*
+    \]
+    with truncation value $r$.
+
+    \item \textbf{Compute the approximation of the operators $G = [A \; B]$.}  
+    \begin{align}
+        \tilde{A} &= \hat{U}^* X' \tilde{V} \tilde{\Sigma}^{-1} \tilde{U}_1^* \hat{U}, \\
+        \tilde{B} &= \hat{U}^* X' \tilde{V} \tilde{\Sigma}^{-1} \tilde{U}_2^*.
+    \end{align}
+
+    \item \textbf{Perform the eigenvalue decomposition of $\tilde{A}$.}  
+    \[
+        \tilde{A} W = W \Lambda.
+    \]
+
+    \item \textbf{Compute the dynamic modes of the operator $A$.}  
+    \[
+        \Phi = X' \tilde{V} \tilde{\Sigma}^{-1} \tilde{U}_1^* \hat{U} W.
+    \]
+\end{enumerate}
+
+\vspace{1cm}
+
+\subsubsection*{The DMDc Matlab Algorithm}
+
+\vspace{1cm}
+
+\begin{lstlisting}[language=Matlab, caption={}]
+X   = StateData(:, 1:end-1);
+Xp  = StateData(:, 2:end);
+Ups = InputData(:, 1:end-1);
+Omega = [X; Ups];
+
+[U, Sig, V] = svd(Omega, 'econ');
+thresh = 1e-10;
+rtil = length(find(diag(Sig) > thresh));
+Util = U(:, 1:rtil);
+Sigtil = Sig(1:rtil, 1:rtil);
+Vtil = V(:, 1:rtil);
+
+[U, Sig, V] = svd(Xp, 'econ');
+thresh = 1e-10;
+r = length(find(diag(Sig) > thresh));
+Uhat = U(:, 1:r);
+Sighat = Sig(1:r, 1:r);
+Vbar = V(:, 1:r);
+
+n = size(X, 1);
+q = size(Ups, 1);
+U_1 = Util(1:n, :);
+U_2 = Util(n+q:n+q, :);
+approxA = Uhat' * Xp * Vtil * inv(Sigtil) * U_1' * Uhat;
+approxB = Uhat' * Xp * Vtil * inv(Sigtil) * U_2';
+
+[W, D] = eig(approxA);
+
+Phi = Xp * Vtil * inv(Sigtil) * U_1' * Uhat * W;
+\end{lstlisting}
+
+\vspace{1cm}
+
+\subsubsection*{Example}
+
+\vspace{1cm}
+
+DMDc can be utilized to discover the underlying dynamics of an unstable system that
+has a stabilizing controller. Without the inclusion of measurements of the inputs,
+DMD would produce a set of stable eigenvalues and dynamic modes. DMDc, though,
+can recover the unstable dynamics. Consider the unstable linear dynamical system
+\[
+    \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}_{k+1}
+    =
+    \begin{bmatrix} 1.5 & 0 \\ 0 & 0.1 \end{bmatrix}
+    \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}_k
+    +
+    \begin{bmatrix} 1 \\ 0 \end{bmatrix} u_k, 
+\]
+where $u_k = K[x_1]_k$ and $K=-1$.  
+The proportional controller shifts the unstable eigenvalue, $\lambda = 1.5$, 
+to a stable value $\lambda = 0.5$ within the unit circle. 
+Recall that eigenvalues outside the unit circle in the complex plane are unstable 
+for discrete-time systems.  
+
+We can produce artificial data from this model using an initial condition
+$x_0 = [4 \; 7]^T$. The first five temporal snapshots are
+\[
+X =
+\begin{bmatrix}
+4 & 2 & 1 & 0.5 \\
+7 & 0.7 & 0.07 & 0.007
+\end{bmatrix},
+\]
+\[
+X' =
+\begin{bmatrix}
+2 & 1 & 0.5 & 0.25 \\
+0.7 & 0.07 & 0.007 & 0.0007
+\end{bmatrix},
+\]
+\[
+\Upsilon =
+\begin{bmatrix}
+-4 & -2 & -1 & -0.5
+\end{bmatrix}.
+\]
+
+Utilizing these data matrices and a known input matrix $B$, the description of DMDc 
+in §6.1.2 can be applied.  
+The SVD of $X$ gives the factorization
+\[
+U =
+\begin{bmatrix}
+-0.5239 & -0.8462 \\
+-0.8462 & 0.5329
+\end{bmatrix},
+\quad
+\Sigma =
+\begin{bmatrix}
+8.2495 & 0 \\
+0 & 1.6402
+\end{bmatrix},
+\]
+\[
+V =
+\begin{bmatrix}
+-0.9764 & 0.2105 \\
+-0.2010 & -0.8044 \\
+-0.0718 & -0.4932 \\
+-0.0330 & -0.2557
+\end{bmatrix}. 
+\]
+
+From these, and the matrix $B$, we can compute an approximation to $A$:
+\[
+    \bar{A} =
+    \begin{bmatrix}
+    1.5 & 0 \\
+    0 & 0.1
+    \end{bmatrix},
+\]
+thus recovering the unstable dynamics from data.  
+DMD alone would incorrectly yield a stable operator, whereas DMDc correctly
+disambiguates the dynamics.
+
+\bigskip
+\noindent\textbf{ALGORITHM 6.1. DMDc for unstable systems with known B matrix}
+\begin{lstlisting}[language=Matlab, caption={}]
+% Data collection
+A = [1.5 0; 0 0.1];
+x0 = [4; 7];
+K  = [-1];
+m  = 20;
+DataX = x0;
+DataU = [0];
+B = [1; 0];
+
+for j = 1:m
+    DataX(:, j+1) = A * DataX(:, j) + B .* (K * DataX(:, j));
+    DataU(:, j)   = K .* DataX(1, j);
+end
+
+% Data matrices
+X   = DataX(:, 1:end-1);
+Xp  = DataX(:, 2:end);
+Ups = DataU;
+
+% SVD
+[U, Sig, V] = svd(X, 'econ');
+thresh = 1e-10;
+r = length(find(diag(Sig) > thresh));
+U   = U(:, 1:r);
+Sig = Sig(1:r, 1:r);
+V   = V(:, 1:r);
+
+% DMD
+A_DMD = Xp * V * inv(Sig) * U';
+
+% DMDc - B is known
+A_DMDc = (Xp - B * Ups) * V * inv(Sig) * U';
+\end{lstlisting}
+
+
+\vspace{1cm}
+
+\subsection{Operator Inference}
+
+\vspace{1cm}
+
+We consider here projection-based model reduction for full models that are based on parametrized time-dependent partial differential equations (PDEs). Projection-based model reduction first constructs a basis of a low-dimensional reduced space and then projects the equations of the full model onto the reduced space to obtain the operators of the reduced model.
+
+We present nonintrusive
+operator inference that replaces the classical intrusive reduced operator construction by deriving approximations of the reduced operators directly from data of the full model, without requiring the full-model operators. The data include initial conditions, inputs, trajectories of the full-model states, and outputs. The reduced operators are low-dimensional quantities and therefore the inference underlying our approach is feasible with respect to computational costs and with respect to required amount of data. Our operator inference is applicable to nonlinear PDEs with polynomial nonlinear terms of low order. Our operator inference provides a nonintrusive way to construct a reduced model.
+
+Our operator inference follows a similar approach to DMD. We also optimize for operators that best fit the trajectories in the L2 norm. In the case of a linear full model and inputs that are constant over time, our inferred operator is the same operator as the one obtained via DMD; however, DMD derives a linear approximation of the full model, whereas our approach can handle full models that have polynomial nonlinear terms. Note that a first approach exists to extend DMD to nonlinear full models via the Koopman operator that transforms a finite-dimensional nonlinear system into an infinite-dimensional linear system.
+
+\vspace{1cm}
+
+\subsubsection*{Algorithm  for models with second-order nonlinear terms}
+
+\vspace{1cm}
+
+\begin{algorithm}
+\begin{algorithmic}[1]
+\Procedure{INFEROP}{$x_0, X, U, Y, V_n$}
+    \State Project $\hat{x}_0 = V_n^T x_0$ and $\hat{X} = X V_n$
+    \State Assemble matrices $\hat{X}^{(1)}, \dots, \hat{X}^{(n)}$ following (11)
+    \State Assemble data matrix $D$ following (14): 
+          \[
+             D = [\hat{X}, U, \hat{X}^{(1)}, \dots, \hat{X}^{(n)}] \in \mathbb{R}^{K \times (n+p+s)}
+          \]
+    \State Assemble right-hand side matrix $R$ using (24): 
+          \[
+             R = 
+             \begin{bmatrix}
+                \frac{\hat{x}_1 - \hat{x}_0}{\delta t}, \dots, 
+                \frac{\hat{x}_K - \hat{x}_{K-1}}{\delta t}
+             \end{bmatrix}^T 
+             \in \mathbb{R}^{K \times n}
+          \]
+    \State Extract columns $R = [r_1, \dots, r_n]$ and solve for $O^T = [o_1, \dots, o_n]$ in
+          \[
+             \min \|D o_i - r_i\|_2^2, \quad i = 1, \dots, n
+          \]
+    \State Extract operators $\hat{A}, \hat{B}, \hat{F}^{(1)}, \dots, \hat{F}^{(n)}$ from $O$ as in (19)
+    \State Assemble $\hat{F} = [\hat{F}^{(1)}, \dots, \hat{F}^{(n)}]$
+    \State Solve least-squares problem (23) to construct matrix $\hat{C}$
+    \State \Return $\hat{A}, \hat{B}, \hat{C}, \hat{F}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\vspace{1cm}
+
+\subsubsection*{Operator inference steps}
+
+\vspace{1cm}
+
+Operator Inference (OpInf) is a data-driven approach to reduced-order modeling.  
+Unlike intrusive projection-based methods, OpInf does not require access to the 
+full operators $A$, $B$, $C$, and $F$ of the high-dimensional system. 
+Instead, it infers reduced operators directly from available data: 
+initial conditions, state trajectories, inputs, and outputs.
+
+\begin{itemize}
+    \item \textbf{Projection to reduced space}  
+    
+    A POD basis $V_n \in \mathbb{R}^{N \times n}$ is constructed from snapshot data.  
+    Full states $x_j$ are projected as $\hat{x}_j = V_n^T x_j$, giving reduced 
+    trajectories $\hat{X} \in \mathbb{R}^{K \times n}$ of dimension $n \ll N$.  
+    Nonlinear terms such as $\hat{x}_j^2$ are also included to capture quadratic dynamics.
+
+    \item \textbf{Inference of reduced operators}  
+    
+    The reduced dynamics are assumed to take the form
+    \[
+        \dot{\hat{x}}_j = \hat{A} \hat{x}_j + \hat{F} \hat{x}_j^2 + \hat{B} u_j,
+    \]
+    where $(\hat{A}, \hat{B}, \hat{F})$ are unknown.  
+    Derivatives $\dot{\hat{x}}_j$ are approximated by finite differences.  
+    The operators are then identified by solving a linear least-squares problem:
+    \[
+        \min_{\hat{A}, \hat{B}, \hat{F}}
+        \sum_{j=1}^K \| \dot{\hat{x}}_j - \hat{A}\hat{x}_j - \hat{F}\hat{x}_j^2 - \hat{B}u_j \|_2^2.
+    \]
+
+    \item \textbf{Inference of the output operator}  
+    
+    The reduced output operator $\hat{C}$ is identified by fitting the observed outputs:
+    \[
+        \min_{\hat{C}} \sum_{j=1}^K \| y_j - \hat{C}\hat{x}_j \|_2^2.
+    \]
+
+    \item \textbf{Theoretical guarantees}  
+    
+    As the time step $\delta t \to 0$ and the reduced basis dimension $n$ grows, 
+    the inferred operators converge to the intrusive Galerkin-projected operators.  
+    This ensures that stability and accuracy properties of classical reduced-order models 
+    are preserved in the data-driven setting.
+
+    \item \textbf{Computational procedure}  
+    
+    The OpInf algorithm proceeds as follows:
+    \begin{enumerate}
+        \item Project the snapshot trajectories into the reduced space.
+        \item Approximate time derivatives with finite differences.
+        \item Assemble data and right-hand side matrices.
+        \item Solve least-squares problems to infer $\hat{A}$, $\hat{B}$, and $\hat{F}$.
+        \item Solve a least-squares problem to infer $\hat{C}$.
+        \item Construct the reduced model:
+        \[
+            \dot{\hat{x}} = \hat{A}\hat{x} + \hat{F}\hat{x}^2 + \hat{B}u, 
+            \quad \hat{y} = \hat{C}\hat{x}.
+        \]
+    \end{enumerate}
+\end{itemize}
+
+\vspace{1cm}
+
+
+\vspace{1cm}
+
+\vspace{1cm}
+
+\vspace{1cm}
+
+\vspace{1cm}
+
+\vspace{1cm}
+
+\vspace{1cm}
+
+\end{document}
