@@ -63,10 +63,14 @@ def DMDc_unknown(X, U, dt, r=None):
     return A_DMDc, B_DMDc, eigenvalues, modes
 
 
-def DMDc_known(X, U, B, dt, t, r=None):
-    X1 = X[:, :-1]
-    X2 = X[:, 1:]
+
+
+
+def DMDc_known(X, U, B, dt, r=None):
     
+    X1 = X[:, :-1]  
+    X2 = X[:, 1:]  
+
     U_svd, Sig, Vt = np.linalg.svd(X1, full_matrices=False)
     V = Vt.T
     
@@ -78,32 +82,8 @@ def DMDc_known(X, U, B, dt, t, r=None):
     Sig_r = np.diag(Sig[:r])
     V_r = V[:, :r]
     
-    A_DMDc = (X2 - B @ U) @ V_r @ np.linalg.inv(Sig_r) @ U_r.T
+    A = (X2 - B @ U) @ V_r @ np.linalg.inv(Sig_r) @ U_r.T
     
-    lam, W = np.linalg.eig(A_DMDc)
-    Phi = (X2 - B @ U) @ V_r @ np.linalg.inv(Sig_r) @ W
-    omega = np.log(lam) / dt
+    eigenvalues, modes = np.linalg.eig(A)
     
-    x1 = X[:, 0]
-    b = np.linalg.lstsq(Phi, x1, rcond=None)[0]
-    
-    time_dynamics = np.zeros((r, len(t)), dtype=complex)
-    
-    for i in range(len(t)):
-        time_dynamics[:, i] = b * np.exp(omega * t[i])
-    
-    X_dmd = Phi @ time_dynamics
-    
-    X_sim = np.zeros((X.shape[0], len(t)), dtype=float)
-    X_sim[:, 0:1] = X[:, 0:1]
-    
-    if U.shape[1] >= len(t) - 1:
-        for i in range(len(t) - 1):
-            X_sim[:, i+1:i+2] = A_DMDc @ X_sim[:, i:i+1] + B @ U[:, i:i+1]
-    else:
-        for i in range(min(U.shape[1], len(t) - 1)):
-            X_sim[:, i+1:i+2] = A_DMDc @ X_sim[:, i:i+1] + B @ U[:, i:i+1]
-        for i in range(U.shape[1], len(t) - 1):
-            X_sim[:, i+1:i+2] = A_DMDc @ X_sim[:, i:i+1]
-    
-    return Phi, omega, lam, b, X_dmd, A_DMDc, X_sim
+    return A, eigenvalues, modes
