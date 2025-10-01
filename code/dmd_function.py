@@ -2,7 +2,7 @@ import numpy as np
 
 
 
-def DMD(X, r, dt, t, xi):
+def DMD(X, r, dt, t):
     X1 = X[:, :-1]
     X2 = X[:, 1:]
 
