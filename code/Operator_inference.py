@@ -2,7 +2,6 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.linalg import lstsq
 from findiff import Diff
-from typing import Tuple
 import matplotlib.pyplot as plt
 
 def operator_inference(X, U, dt, r=None, regularization=None, rcond=1e-15):
