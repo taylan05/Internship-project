@@ -77,17 +77,78 @@
 
 \vspace{1cm}
 
+For this internship, I had to create a new repository on my GIThub account. I created a folder structure (code, latex, literature) and added a .gitignore file for each folder (and the main folder.
 
-\vspace{2cm}
+Here is how it is organized : 
+
+\subsubsection*{Code}
+
+
+At the moment, two folders have been created in this Code folder : 
+
+\begin{itemize}
+    \item Functions : Where I put all the codes for the mathematical tools used (DMD, DMD with control, Operator inference, etc...).
+    \item Workflow : Where i put all the rest of the codes needed for this whole project (Data prepocessing, Data compression, Visualization of the results, etc...).
+\end{itemize}
+
+\subsubsection*{Latex}
+
+
+This folder will only contain the .tex file of this report.
+
+
+\subsubsection*{Literature}
+
+
+Here are all the ressources I needed to have a better understanding of the project (books, articles, interactive codes, etc...).
+
+\vspace{1cm}
+
 
 \subsection{Jupyter notebooks}
 
 \vspace{1cm}
 
+I also had to create a new virtual environment for the project, with Anaconda. I had to import lots of packages to run those codes, especially for the operator inference one, where opinf is needed for example.
 
-\vspace{2cm}
+Here is an example of the requirements needed to run the operator inference code, with the package and the version associated : 
+
+cvxpy = 1.3.2 
+
+cvxopt = 1.3.2
+
+findiff = 0.12.1
+
+ipykernel = 6.29.5
+
+jupytext = 1.17.2
+
+jupyter = 1.1.1 
+
+matplotlib = 3.10.3
+
+meshio = 5.3.5
+
+notebook
+
+numpy = 2.3.0
+
+pyvista = 0.43.9
+
+scipy = 1.15.3
+
+scs = 3.2.3
+
+ipywidgets = 8.1.7
+
+
+\vspace{1cm}
 
 \section{Mathematical introduction}
+
+\vspace{1cm}
+
+In this section, I will write every mathematical tools needed to work on this project.
 
 \vspace{1cm}
 
@@ -120,6 +181,13 @@ where
 r = \mathrm{rank}(A).
 \]
 \end{theorem}
+
+\vspace{1cm}
+
+As the proof shows, this Theorem can be formulated analogously for real matrices 
+$A \in \mathbb{R}^{n,m}$ with $n \geq m$. In this case the two matrices $V$ and $W$ 
+are orthogonal. If $n < m$ we can apply the theorem to $A^H$ (resp.\ $A^T$ in the real case).
+
 
 \vspace{1cm}
 
@@ -277,6 +345,60 @@ Ax = b
 has no solution, then we can try to find an $\hat{x} \in \mathbb{C}^{m,1}$ such that 
 $Ax$ is “as close as possible” to $b$. Using the Moore--Penrose inverse we 
 obtain the best possible approximation with respect to the Euclidean norm.
+
+\vspace{1cm}
+
+\subsubsection*{The Moore-Penrose inverse}
+
+\begin{enumerate}
+    \item \textbf{Existence}
+    \begin{itemize}
+        \item \emph{Usual inverse $A^{-1}$:} Exists only if $A$ is square ($n \times n$) and nonsingular (i.e.\ $\det(A) \neq 0$).
+        \item \emph{Moore--Penrose inverse $A^{\dagger}$:} Always exists for any matrix $A$, whether square or rectangular, singular or nonsingular.
+    \end{itemize}
+
+    \item \textbf{Defining properties}
+    \begin{itemize}
+        \item \emph{Usual inverse:} Defined by
+        \[
+        A A^{-1} = A^{-1} A = I.
+        \]
+        \item \emph{Moore--Penrose inverse:} Defined by the \textbf{four Penrose conditions}:
+        \[
+        A A^{\dagger} A = A, \quad
+        A^{\dagger} A A^{\dagger} = A^{\dagger}, \quad
+        (A A^{\dagger})^H = A A^{\dagger}, \quad
+        (A^{\dagger} A)^H = A^{\dagger} A.
+        \]
+        These conditions ensure a well-defined ``best possible'' generalized inverse.
+    \end{itemize}
+
+    \item \textbf{Relation to solutions of linear systems}
+    \begin{itemize}
+        \item \emph{Usual inverse:}  
+        If $A$ is invertible, the system $Ax = b$ has the unique solution
+        \[
+        x = A^{-1} b.
+        \]
+        \item \emph{Moore--Penrose inverse:}  
+        \begin{itemize}
+            \item If $Ax=b$ is consistent, then
+            \[
+            x = A^{\dagger} b
+            \]
+            gives the solution of minimum norm.
+            \item If $Ax=b$ is inconsistent, then
+            \[
+            x = A^{\dagger} b
+            \]
+            gives the least-squares solution, i.e.
+            \[
+            x = \arg\min_{z \in \mathbb{C}^{m,1}} \|Az - b\|_2.
+            \]
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
 
     
 \end{definition}
@@ -523,6 +645,127 @@ end
 
 Xdmd = Phi * time_dynamics;
 \end{lstlisting}
+
+\vspace{1cm}
+
+I started with a basic MATLAB implementation of the Dynamic Mode Decomposition (DMD) algorithm, with the function 
+
+\[
+\texttt{[Phi, omega, lambda, b, Xdmd] = DMD(X1, X2, r, dt)}
+\]  
+  
+
+The algorithm computes an SVD of \(X_1\), truncates it to rank \(r\), and builds the reduced operator  
+
+\[
+\tilde{A} = U_r^\top X_2 V_r S_r^{-1}.
+\]  
+
+From this reduced operator, it computes the eigenvalues and eigenvectors, constructs the DMD modes, and finally reconstructs the data matrix \(X_{\text{dmd}}\).  
+
+\bigskip
+To test this implementation, I created random data using a random stable system. 
+I generated a system matrix \(A \in \mathbb{R}^{n \times n}\) with small random entries, shifted by a negative diagonal to ensure stability. 
+Starting from a random initial condition \(x_0\), I simulated the system dynamics  
+
+\[
+x_{k} = A x_{k-1}, \qquad k=2,\dots,m,
+\]  
+
+to build a snapshot matrix \(X = [x_1, x_2, \dots, x_m]\). 
+I then split this into \(X_1\) and \(X_2\).  
+
+\bigskip
+
+I introduced three error metrics:  
+
+\[
+\text{err}_{\tilde{A}} = \frac{\|U_r^\top A U_r - \tilde{A}\|_F}{\|U_r^\top A U_r\|_F}, \qquad
+\text{err}_{X} = \frac{\|X_2 - A_{\text{approx}} X_1\|_F}{\|X_2\|_F}, \qquad
+\text{err}_{\text{recon}} = \frac{\|X_1 - X_{\text{dmd}}\|_F}{\|X_1\|_F}.
+\]  
+
+Here, 
+\(\text{err}_{\tilde{A}}\) measures how well the reduced operator \(\tilde{A}\) approximates the projection of \(A\), 
+\(\text{err}_{X}\) evaluates how well the approximate dynamics reproduce the one-step evolution of the snapshots, 
+and \(\text{err}_{\text{recon}}\) quantifies the accuracy of the full DMD reconstruction.  
+
+
+\vspace{1cm}
+
+\begin{lstlisting}[language=Matlab, caption={Main code}]
+    % Dimensions
+n = 1000;      % state dimension (rows)
+m = 50;       % number of snapshots (columns)
+dt = 0.1;     % timestep
+
+% Create a random stable system matrix A
+A = randn(n,n) * 0.05;        % small random entries
+A = A - 0.1*eye(n);           % shift eigenvalues left -> stability
+
+% Initial condition
+x0 = randn(n,1);
+
+% Generate snapshot matrix X
+X = zeros(n,m);
+X(:,1) = x0;
+for k = 2:m
+    X(:,k) = A * X(:,k-1);   % linear evolution
+end
+
+% Build X1 and X2 (shifted matrices)
+X1 = X(:,1:end-1);   % size n x (m-1)
+X2 = X(:,2:end);     % size n x (m-1)
+
+% Example: run your DMD
+r = 5;   % target rank (choose smaller than m-1)
+[Phi, omega, lambda, b, Xdmd, Atilde, U_r] = DMD(X1, X2, r, dt);
+disp(A);
+A_approx = U_r * Atilde * U_r';
+
+% I tried to capture the difference between 
+% the actual and the created matrice. But it does 
+% not make sense because it captures the
+% dominant dynamics along the trajectories I sampled.
+
+% diff_norm = norm(A - A_approx, 'fro');
+% rel_err = diff_norm / norm(A, 'fro');
+% disp(rel_err);
+
+
+Ar_sub = U_r' * A * U_r;
+err_Atilde = norm(Ar_sub - Atilde, 'fro') / max( eps, norm(Ar_sub,'fro') );
+err_X = norm(X2 - A_approx * X1, 'fro') / max( eps, norm(X2,'fro') );
+err_recon = norm(X1 - Xdmd, 'fro') / max( eps, norm(X1,'fro') );
+
+fprintf('err_Atilde (reduced-op): %.4e\n', err_Atilde);
+fprintf('err_X (data action):      %.4e\n', err_X);
+fprintf('err_recon (reconstruction):%.4e\n', err_recon);
+
+\end{lstlisting}
+
+
+\vspace{1cm}
+
+When computing the Singular Value Decomposition (SVD) in MATLAB, the command
+\[
+[U, S, V] = \texttt{svd}(X1,'econ')
+\]
+returns the so-called economy-size decomposition. This means that if $X_1 \in \mathbb{R}^{n \times m}$, then the matrices have dimensions
+\[
+U \in \mathbb{R}^{n \times p}, \quad S \in \mathbb{R}^{p \times p}, \quad V \in \mathbb{R}^{m \times p}, \quad p = \min(n,m).
+\]
+By contrast, the full SVD without the option \texttt{'econ'} would return
+\[
+U \in \mathbb{R}^{n \times n}, \quad S \in \mathbb{R}^{n \times m}, \quad V \in \mathbb{R}^{m \times m}.
+\]
+
+In the context of Dynamic Mode Decomposition, only the first $p$ singular vectors are ever used, and subsequently only the leading $r \leq p$ components are retained. Therefore, computing the full SVD produces a large number of unnecessary vectors and zero singular values. This increases both memory usage and computational cost without providing any benefit.
+
+As an illustration, if $X_1$ is a $1000 \times 50$ matrix (that is, a state of dimension $1000$ with $50$ snapshots), then the full SVD produces $U$ of size $1000 \times 1000$, $S$ of size $1000 \times 50$, and $V$ of size $50 \times 50$. On the other hand, the economy SVD produces $U$ of size $1000 \times 50$, $S$ of size $50 \times 50$, and $V$ of size $50 \times 50$. The difference is very significant: instead of storing one million entries in $U$, the economy decomposition requires only fifty thousand.
+
+For this reason, the DMD algorithm almost always uses the economy SVD. It provides exactly the same information that is needed for the reduced-order model, while being substantially more efficient in terms of memory and computational cost.
+
 
 \vspace{1cm}
 
@@ -860,7 +1103,7 @@ A_DMDc = (Xp - B * Ups) * V * inv(Sig) * U';
 \end{lstlisting}
 
 
-\vspace{1cm}
+\newpage
 
 \subsection{Operator Inference}
 
@@ -911,68 +1154,163 @@ Our operator inference follows a similar approach to DMD. We also optimize for o
 
 \vspace{1cm}
 
-\subsubsection*{Operator inference steps}
+
+\subsubsection*{Problem setup}
+
+We consider systems of parametrized nonlinear ordinary differential equations (ODEs) of the form
+\[
+\frac{d}{dt} x(t;\mu) = f(x(t;\mu), u(t;\mu); \mu),
+\qquad x(0;\mu) = x_0(\mu),
+\]
+with state vector $x(t;\mu) \in \mathbb{R}^N$, input $u(t;\mu) \in \mathbb{R}^p$, 
+parameter $\mu \in \mathcal{D} \subset \mathbb{R}^d$, and output
+\[
+y(t;\mu) = C(\mu)x(t;\mu) \in \mathbb{R}^q.
+\]
+
+A common case of interest is when the dynamics include quadratic nonlinearities:
+\[
+\frac{d}{dt} x(t;\mu) = A(\mu)x(t;\mu) + F(\mu)x(t;\mu)^2 + B(\mu)u(t;\mu),
+\qquad y(t;\mu) = C(\mu)x(t;\mu),
+\]
+where $A(\mu) \in \mathbb{R}^{N \times N}$ corresponds to the linear term, 
+$F(\mu) \in \mathbb{R}^{N \times S}$ to quadratic interactions, and 
+$B(\mu), C(\mu)$ to the input and output operators.  
+Here $x(t;\mu)^2 \in \mathbb{R}^S$ collects all quadratic monomials of the components of $x(t;\mu)$, 
+with $S = N(N+1)/2$.  
 
 \vspace{1cm}
 
-Operator Inference (OpInf) is a data-driven approach to reduced-order modeling.  
-Unlike intrusive projection-based methods, OpInf does not require access to the 
-full operators $A$, $B$, $C$, and $F$ of the high-dimensional system. 
-Instead, it infers reduced operators directly from available data: 
-initial conditions, state trajectories, inputs, and outputs.
+\subsubsection*{Time discretization}
 
-\begin{itemize}
-    \item \textbf{Projection to reduced space}  
-    
-    A POD basis $V_n \in \mathbb{R}^{N \times n}$ is constructed from snapshot data.  
-    Full states $x_j$ are projected as $\hat{x}_j = V_n^T x_j$, giving reduced 
-    trajectories $\hat{X} \in \mathbb{R}^{K \times n}$ of dimension $n \ll N$.  
-    Nonlinear terms such as $\hat{x}_j^2$ are also included to capture quadratic dynamics.
+Let $0 = t_0 < t_1 < \cdots < t_K = T$ be the discretization of the time domain $[0,T]$ into 
+$K \in \mathbb{N}$ equidistant time steps with step size $0 < \delta t \in \mathbb{R}$.  
+Let $x_1(\mu), \dots, x_K(\mu) \in \mathbb{R}^N$ be the discrete states of the ODE system at 
+times $t_1,\dots,t_K$, computed with a time-stepping scheme, and let 
+$y_1(\mu), \dots, y_K(\mu) \in \mathbb{R}^q$ be the corresponding outputs.  
 
-    \item \textbf{Inference of reduced operators}  
-    
-    The reduced dynamics are assumed to take the form
-    \[
-        \dot{\hat{x}}_j = \hat{A} \hat{x}_j + \hat{F} \hat{x}_j^2 + \hat{B} u_j,
-    \]
-    where $(\hat{A}, \hat{B}, \hat{F})$ are unknown.  
-    Derivatives $\dot{\hat{x}}_j$ are approximated by finite differences.  
-    The operators are then identified by solving a linear least-squares problem:
-    \[
-        \min_{\hat{A}, \hat{B}, \hat{F}}
-        \sum_{j=1}^K \| \dot{\hat{x}}_j - \hat{A}\hat{x}_j - \hat{F}\hat{x}_j^2 - \hat{B}u_j \|_2^2.
-    \]
+We define the trajectory
+\[
+X(\mu) = 
+\begin{bmatrix}
+x_1(\mu) \\
+\vdots \\
+x_K(\mu)
+\end{bmatrix}
+\in \mathbb{R}^{K \times N},
+\qquad
+Y(\mu) = 
+\begin{bmatrix}
+y_1(\mu) \\
+\vdots \\
+y_K(\mu)
+\end{bmatrix}
+\in \mathbb{R}^{K \times q},
+\]
+and the input matrix
+\[
+U(\mu) = 
+\begin{bmatrix}
+u(t_1;\mu) \\
+\vdots \\
+u(t_K;\mu)
+\end{bmatrix}
+\in \mathbb{R}^{K \times p}.
+\]
 
-    \item \textbf{Inference of the output operator}  
-    
-    The reduced output operator $\hat{C}$ is identified by fitting the observed outputs:
-    \[
-        \min_{\hat{C}} \sum_{j=1}^K \| y_j - \hat{C}\hat{x}_j \|_2^2.
-    \]
+The trajectory $X(\mu)$ and the output matrix $Y(\mu)$ contain the discrete states and outputs 
+derived with a time-stepping scheme, while $U(\mu)$ contains the inputs of the continuous model 
+sampled at the same discrete time steps.  
+We assume that the scheme is convergent, i.e. as $\delta t \to 0$, the discrete states $x_j(\mu)$ 
+converge in the $L^2$ sense to the continuous solution $x(t_j;\mu)$.  
 
-    \item \textbf{Theoretical guarantees}  
-    
-    As the time step $\delta t \to 0$ and the reduced basis dimension $n$ grows, 
-    the inferred operators converge to the intrusive Galerkin-projected operators.  
-    This ensures that stability and accuracy properties of classical reduced-order models 
-    are preserved in the data-driven setting.
+\vspace{1cm}
 
-    \item \textbf{Computational procedure}  
-    
-    The OpInf algorithm proceeds as follows:
-    \begin{enumerate}
-        \item Project the snapshot trajectories into the reduced space.
-        \item Approximate time derivatives with finite differences.
-        \item Assemble data and right-hand side matrices.
-        \item Solve least-squares problems to infer $\hat{A}$, $\hat{B}$, and $\hat{F}$.
-        \item Solve a least-squares problem to infer $\hat{C}$.
-        \item Construct the reduced model:
-        \[
-            \dot{\hat{x}} = \hat{A}\hat{x} + \hat{F}\hat{x}^2 + \hat{B}u, 
-            \quad \hat{y} = \hat{C}\hat{x}.
-        \]
-    \end{enumerate}
-\end{itemize}
+
+\subsubsection*{Data projection}
+
+Let $V_n \in \mathbb{R}^{N \times n}$ be the POD basis matrix containing as columns the first $n$ POD basis vectors.  
+The projected state $\hat{x}(t) \in \mathbb{R}^n$ of the full-model state $x(t) \in \mathbb{R}^N$ is
+\[
+\hat{x}(t) = V_n^T x(t).
+\]
+
+For the discrete states $x_1, \dots, x_K$, this gives
+\[
+\hat{x}_j = V_n^T x_j, \qquad j = 1,\dots,K,
+\]
+which we assemble into the projected trajectory
+\[
+\hat{X} = 
+\begin{bmatrix}
+\hat{x}_1 \\
+\vdots \\
+\hat{x}_K
+\end{bmatrix}
+\in \mathbb{R}^{K \times n}.
+\]
+
+We also define quadratic lifted data from the projected states:
+\[
+\hat{X}^{(i)} =
+\begin{bmatrix}
+\hat{x}_1^{(i)} \\
+\vdots \\
+\hat{x}_K^{(i)}
+\end{bmatrix}
+\in \mathbb{R}^{K \times i},
+\qquad i=1,\dots,n,
+\]
+where each $\hat{x}_j^{(i)}$ contains the $i$-th quadratic combinations of $\hat{x}_j$
+
+
+
+\vspace{1cm}
+
+
+\subsubsection*{Inference of reduced operators}
+
+\vspace{1cm}
+
+We now infer the reduced operators directly from the projected data. 
+The goal is to approximate the dynamics of the reduced states without 
+requiring access to the full-model operators.
+
+Considering the previous discrete time steps, we seek reduced operators $\hat{A} \in \mathbb{R}^{n \times n}$, 
+$\hat{B} \in \mathbb{R}^{n \times p}$, and 
+$\hat{F} \in \mathbb{R}^{n \times s}$ 
+that minimize the difference between the time derivatives 
+and the reduced-order dynamics. This leads to the optimization problem
+\begin{equation}
+    \min_{\hat{A}, \hat{B}, \hat{F}} 
+    \sum_{j=1}^K \big\| \dot{\hat{x}}_j - \hat{A}\hat{x}_j - \hat{F}\hat{x}_j^2 - \hat{B}u_j \big\|_2^2.
+\end{equation}
+
+
+To express the problem compactly, we define the data matrix
+\begin{equation}
+    D = [\hat{X}, U, \hat{X}^{(1)}, \dots, \hat{X}^{(n)}] \in \mathbb{R}^{K \times (n+p+s)},
+\end{equation}
+where $\hat{X}$ is the projected trajectory, $U$ is the input matrix, 
+and $\hat{X}^{(i)}$ are the matrices derived from the projected states 
+as in Eq.~(11). The right-hand side matrix is
+\begin{equation}
+    R = [\dot{\hat{x}}_1, \dots, \dot{\hat{x}}_K]^T \in \mathbb{R}^{K \times n}.
+\end{equation}
+
+The optimization problem can now be written as a linear least-squares problem:
+\begin{equation}
+    \min_{O \in \mathbb{R}^{n \times (n+p+s)}} \| D O^T - R \|_F^2,
+\end{equation}
+where
+\[
+    O = [\hat{A}, \hat{B}, \hat{F}^{(1)}, \dots, \hat{F}^{(n)}].
+\]
+This problem decouples into $n$ independent least-squares problems, 
+one for each column of $R$, which can be solved efficiently.
+
+\vspace{1cm}
+
 
 \vspace{1cm}
 
